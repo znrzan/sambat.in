@@ -55,7 +55,7 @@ export function Turnstile({ onVerify, onError, onExpire }: TurnstileProps) {
             'error-callback': onError,
             'expired-callback': onExpire,
             theme: 'dark',
-            size: 'flexible',
+            size: 'normal',
         })
     }, [siteKey, onError, onExpire])
 
