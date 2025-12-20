@@ -48,8 +48,7 @@ export function SambatModal({ isOpen, onClose, onSubmit, initialContent = '' }: 
             setIsRecording(false)
             setRecordingTime(0)
             setCustomName('')
-            setTurnstileToken(null)
-            setIsVerifying(false)
+            setIsSubmitting(false)
         }
     }, [isOpen])
 
