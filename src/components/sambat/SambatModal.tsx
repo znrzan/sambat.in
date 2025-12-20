@@ -219,15 +219,13 @@ export function SambatModal({ isOpen, onClose, onSubmit, initialContent = '' }: 
                                         📝 Teks
                                     </button>
                                     <button
-                                        onClick={() => setMode('voice')}
-                                        className={cn(
-                                            "flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2",
-                                            mode === 'voice'
-                                                ? "bg-gradient-to-r from-accent-red to-accent-purple text-white"
-                                                : "bg-bg-tertiary text-text-secondary hover:text-text-primary"
-                                        )}
+                                        disabled
+                                        className="flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2 bg-bg-tertiary text-text-muted cursor-not-allowed relative"
                                     >
                                         🎤 Suara
+                                        <span className="absolute -top-2 -right-2 text-[10px] px-1.5 py-0.5 rounded-full bg-accent-purple text-white">
+                                            Soon
+                                        </span>
                                     </button>
                                 </div>
 
@@ -378,8 +376,9 @@ export function SambatModal({ isOpen, onClose, onSubmit, initialContent = '' }: 
                         </div>
                     </motion.div>
                 </>
-            )}
-        </AnimatePresence>
+            )
+            }
+        </AnimatePresence >
     )
 }
 

@@ -92,10 +92,14 @@ export default function HomePage() {
                             <Flame className="w-5 h-5" />
                             Sambatan
                         </Link>
-                        <button className="btn-secondary inline-flex items-center justify-center gap-2 text-lg px-8 py-4">
-                            <Sparkles className="w-5 h-5" />
-                            Lihat Demo
-                        </button>
+                        <a
+                            href="https://trakteer.id/zanrazann/tip"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-secondary inline-flex items-center justify-center gap-2 text-lg px-8 py-4"
+                        >
+                            ☕ Donasi
+                        </a>
                     </motion.div>
                 </div>
             </section>

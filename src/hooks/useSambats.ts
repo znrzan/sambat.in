@@ -92,8 +92,14 @@ export function useSambats() {
 
             // Upload voice to Cloudinary if present
             if (data.is_voice && data.voiceBlob) {
+                // Determine file extension from blob type
+                const blobType = data.voiceBlob.type || 'audio/webm'
+                const extension = blobType.includes('mp4') ? 'mp4' :
+                    blobType.includes('webm') ? 'webm' :
+                        blobType.includes('wav') ? 'wav' : 'mp3'
+
                 const formData = new FormData()
-                formData.append('file', data.voiceBlob, 'voice.webm')
+                formData.append('file', data.voiceBlob, `voice.${extension}`)
 
                 const uploadResponse = await fetch('/api/upload-voice', {
                     method: 'POST',
@@ -101,8 +107,9 @@ export function useSambats() {
                 })
 
                 if (!uploadResponse.ok) {
-                    console.error('Voice upload error')
-                    throw new Error('Failed to upload voice')
+                    const errorText = await uploadResponse.text()
+                    console.error('Voice upload error:', errorText)
+                    throw new Error('Failed to upload voice: ' + errorText)
                 }
 
                 const uploadResult = await uploadResponse.json()
