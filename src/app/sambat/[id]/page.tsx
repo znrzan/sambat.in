@@ -11,6 +11,7 @@ import { Header } from '@/components/layout/Header'
 import { StickerCanvas } from '@/components/stickers/StickerCanvas'
 import { ReactionPanel } from '@/components/reactions/ReactionPanel'
 import { ReplySection } from '@/components/sambat/ReplySection'
+import { AudioPlayer } from '@/components/sambat/AudioPlayer'
 import { useSambat, useSambats } from '@/hooks/useSambats'
 import { REACTIONS, ReactionCounts } from '@/types'
 
@@ -129,9 +130,15 @@ export default function SambatDetailPage() {
                             </div>
 
                             {/* Content */}
-                            <blockquote className="text-lg text-text-primary leading-relaxed mb-6">
-                                &ldquo;{sambat.content}&rdquo;
-                            </blockquote>
+                            {sambat.is_voice && sambat.voice_url ? (
+                                <div className="mb-6">
+                                    <AudioPlayer src={sambat.voice_url} />
+                                </div>
+                            ) : (
+                                <blockquote className="text-lg text-text-primary leading-relaxed mb-6">
+                                    &ldquo;{sambat.content}&rdquo;
+                                </blockquote>
+                            )}
 
                             {/* Sticker canvas */}
                             <StickerCanvas
