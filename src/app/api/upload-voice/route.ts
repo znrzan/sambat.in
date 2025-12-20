@@ -24,13 +24,19 @@ export async function POST(request: NextRequest) {
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
 
+        // Get file extension from content type
+        const contentType = file.type || 'audio/webm'
+        const extension = contentType.includes('mp4') ? 'mp4' :
+            contentType.includes('webm') ? 'webm' :
+                contentType.includes('wav') ? 'wav' : 'mp3'
+
         // Upload to Cloudinary
         const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
             cloudinary.uploader.upload_stream(
                 {
                     resource_type: 'video', // 'video' handles audio files
                     folder: 'voice-sambat',
-                    format: 'webm',
+                    format: extension,
                 },
                 (error, result) => {
                     if (error) reject(error)
