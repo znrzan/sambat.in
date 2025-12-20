@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Flame, Mic, MicOff, Square, Calendar, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { usePersona } from '@/hooks/usePersona'
 import { EXPIRY_OPTIONS, ExpiryOption } from '@/types'
-import { Turnstile, useTurnstile } from '@/components/Turnstile'
 
 interface SambatModalProps {
     isOpen: boolean
@@ -35,12 +34,9 @@ export function SambatModal({ isOpen, onClose, onSubmit, initialContent = '' }: 
     const [recordingTime, setRecordingTime] = useState(0)
     const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
     const [customName, setCustomName] = useState('')
-    const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
-    const [isVerifying, setIsVerifying] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const mediaRecorderRef = useRef<MediaRecorder | null>(null)
     const timerRef = useRef<NodeJS.Timeout | null>(null)
-
-    const { verifyToken } = useTurnstile()
 
     // Reset state when modal closes
     useEffect(() => {
@@ -128,26 +124,13 @@ export function SambatModal({ isOpen, onClose, onSubmit, initialContent = '' }: 
         }
     }
 
-    const handleTurnstileVerify = useCallback((token: string) => {
-        setTurnstileToken(token)
-    }, [])
-
     const handleSubmit = async () => {
         if (mode === 'text' && !content.trim()) return
         if (mode === 'voice' && !audioBlob) return
-        if (!turnstileToken) return
 
-        setIsVerifying(true)
+        setIsSubmitting(true)
 
         try {
-            // Verify turnstile token
-            const isValid = await verifyToken(turnstileToken)
-            if (!isValid) {
-                console.error('Turnstile verification failed')
-                setTurnstileToken(null) // Reset to get new token
-                return
-            }
-
             onSubmit({
                 content: mode === 'text' ? content : '[Voice Message]',
                 isVoice: mode === 'voice',
@@ -162,7 +145,7 @@ export function SambatModal({ isOpen, onClose, onSubmit, initialContent = '' }: 
         } catch (err) {
             console.error('Submit error:', err)
         } finally {
-            setIsVerifying(false)
+            setIsSubmitting(false)
         }
     }
 
@@ -365,34 +348,25 @@ export function SambatModal({ isOpen, onClose, onSubmit, initialContent = '' }: 
 
                             {/* Footer */}
                             <div className="p-4 border-t border-white/10 space-y-3">
-                                {/* Turnstile - invisible but needed */}
-                                <Turnstile
-                                    onVerify={handleTurnstileVerify}
-                                    onError={() => setTurnstileToken(null)}
-                                    onExpire={() => setTurnstileToken(null)}
-                                />
-
                                 <button
                                     onClick={handleSubmit}
                                     disabled={
                                         (mode === 'text' && !content.trim()) ||
                                         (mode === 'voice' && !audioBlob) ||
-                                        !turnstileToken ||
-                                        isVerifying
+                                        isSubmitting
                                     }
                                     className={cn(
                                         "w-full btn-primary flex items-center justify-center gap-2",
                                         ((mode === 'text' && !content.trim()) ||
                                             (mode === 'voice' && !audioBlob) ||
-                                            !turnstileToken ||
-                                            isVerifying) &&
+                                            isSubmitting) &&
                                         "opacity-50 cursor-not-allowed"
                                     )}
                                 >
-                                    {isVerifying ? (
+                                    {isSubmitting ? (
                                         <>
                                             <Loader2 className="w-5 h-5 animate-spin" />
-                                            Memverifikasi...
+                                            Mengirim...
                                         </>
                                     ) : (
                                         <>

@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MessageCircle, Send, Loader2 } from 'lucide-react'
 import { useReplies } from '@/hooks/useReplies'
 import { formatTimeAgo } from '@/lib/utils'
-import { Turnstile, useTurnstile } from '@/components/Turnstile'
 
 interface ReplySectionProps {
     sambatId: string
@@ -13,35 +12,17 @@ interface ReplySectionProps {
 
 export function ReplySection({ sambatId }: ReplySectionProps) {
     const { replies, loading, addReply, replyCount } = useReplies(sambatId)
-    const { verifyToken } = useTurnstile()
     const [content, setContent] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [showReplies, setShowReplies] = useState(true)
-    const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
-    const [verificationError, setVerificationError] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!content.trim() || isSubmitting) return
 
-        // Verify Turnstile token
-        if (!turnstileToken) {
-            setVerificationError(true)
-            return
-        }
-
         setIsSubmitting(true)
-        setVerificationError(false)
 
         try {
-            // Verify token with backend
-            const isValid = await verifyToken(turnstileToken)
-            if (!isValid) {
-                setVerificationError(true)
-                setIsSubmitting(false)
-                return
-            }
-
             await addReply(content)
             setContent('')
         } catch (error) {
@@ -53,16 +34,6 @@ export function ReplySection({ sambatId }: ReplySectionProps) {
 
     return (
         <div className="mt-6">
-            {/* Turnstile - invisible */}
-            <Turnstile
-                onVerify={(token) => {
-                    setTurnstileToken(token)
-                    setVerificationError(false)
-                }}
-                onError={() => setVerificationError(true)}
-                onExpire={() => setTurnstileToken(null)}
-            />
-
             {/* Header */}
             <button
                 onClick={() => setShowReplies(!showReplies)}
@@ -94,7 +65,7 @@ export function ReplySection({ sambatId }: ReplySectionProps) {
                                 />
                                 <motion.button
                                     type="submit"
-                                    disabled={!content.trim() || isSubmitting || !turnstileToken}
+                                    disabled={!content.trim() || isSubmitting}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     className="px-4 py-3 rounded-xl bg-gradient-to-r from-accent-purple to-accent-red text-white disabled:opacity-50 disabled:cursor-not-allowed"
@@ -106,16 +77,9 @@ export function ReplySection({ sambatId }: ReplySectionProps) {
                                     )}
                                 </motion.button>
                             </div>
-                            <div className="flex justify-between items-center mt-1 ml-1">
-                                <p className="text-xs text-text-muted">
-                                    {content.length}/500 karakter
-                                </p>
-                                {verificationError && (
-                                    <p className="text-xs text-accent-red">
-                                        Verifikasi gagal, coba lagi
-                                    </p>
-                                )}
-                            </div>
+                            <p className="text-xs text-text-muted mt-1 ml-1">
+                                {content.length}/500 karakter
+                            </p>
                         </form>
 
                         {/* Replies List */}
