@@ -3,8 +3,7 @@
 **Sambat aja dulu.**  
 Platform anonim buat curhat, ngeluh, atau sekadar ngoceh. 100% bebas, identitasmu tersembunyi, dan kontenmu bisa auto-hangus.
 
-![Banner](https://via.placeholder.com/1200x600?text=SAMBAT.IN+Preview)  
-*(Note: Replace with actual screenshot)*
+![Lihat Demo](https://sambatin.vercel.app)
 
 ## 🌟 Fitur Utama
 
